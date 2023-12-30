@@ -22,12 +22,33 @@ require("lazy").setup({
     { 'hrsh7th/cmp-nvim-lsp' },
     { 'hrsh7th/nvim-cmp' },
     { 'L3MON4D3/LuaSnip' },
-    { 'nvim-telescope/telescope.nvim',    tag = '0.1.5',       dependencies = { 'nvim-lua/plenary.nvim' } },
+    { 'nvim-telescope/telescope.nvim',    tag = '0.1.5',                                   dependencies = { 'nvim-lua/plenary.nvim' } },
     { 'ThePrimeagen/vim-be-good' },
     { 'numToStr/Comment.nvim' },
-    { 'prichrd/netrw.nvim' },
     { 'simrat39/rust-tools.nvim' },
-    { "catppuccin/nvim",                  name = "catppuccin", priority = 1000 },
+    { "catppuccin/nvim",                  name = "catppuccin",                             priority = 1000 },
+    { 'akinsho/bufferline.nvim',          version = "*",                                   dependencies = 'nvim-tree/nvim-web-devicons' },
+    { 'nvim-tree/nvim-tree.lua',          dependencies = { 'nvim-tree/nvim-web-devicons' } }
+})
+
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.opt.termguicolors = true
+
+require("nvim-tree").setup()
+
+require("bufferline").setup({
+    options = {
+        offsets = {
+            {
+                filetype = "NvimTree",
+                highlight = "Directory",
+                text = "Project Files",
+                text_align = "left",
+                separator = true
+            }
+        }
+    }
 })
 
 local lsp_zero = require('lsp-zero')
@@ -54,7 +75,7 @@ require('mason-lspconfig').setup({})
 
 require('Comment').setup()
 
-require('netrw').setup({})
+vim.treesitter.language.register('mdx', 'markdown')
 
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
@@ -106,9 +127,8 @@ vim.opt.undofile = true
 vim.opt.hlsearch = false
 vim.opt.incsearch = true
 
-vim.g.netrw_banner = 0
-
-vim.keymap.set("n", "<leader>ex", "<cmd>Ex<CR>")
+vim.keymap.set('n', '<leader>tt', '<Cmd>NvimTreeToggle<CR>')
+vim.keymap.set('n', '<leader>tf', '<Cmd>NvimTreeFocus<CR>')
 
 vim.keymap.set("x", "<leader>p", [["_dP]])
 vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
@@ -127,10 +147,12 @@ vim.keymap.set('n', '<leader>f', vim.lsp.buf.format)
 vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv")
 vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv")
 
-vim.keymap.set("v", "<leader>pc", "c<ESC>\"+p<ESC>")
-vim.keymap.set("n", "<leader>pc", "<ESC>\"+pa<ESC>")
-
 vim.keymap.set({ "n", "v", "i" }, "<C-s>", function()
     vim.cmd("w")
     vim.lsp.buf.format()
 end)
+
+for x = 1, 10, 1 do
+    vim.keymap.set('n', string.format('<leader>b%s', x), string.format('<Cmd>BufferLineGoToBuffer%s<CR>', x))
+end
+vim.keymap.set('n', '<leader>b$', '<Cmd>BufferLineGoToBuffer -1<CR>')
